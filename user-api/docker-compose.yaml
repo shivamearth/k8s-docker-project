@@ -1,0 +1,35 @@
+#docker-compose -f docker-compose.yaml up --build
+version: '3.8'
+
+services:
+  user-api:
+    build:
+      context: ./
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - user-api-network
+    environment:
+      - MYSQL_URL=mysqldb
+    depends_on:
+      - mysqldb
+  mysqldb:
+    image: mysql
+    ports:
+      - "3306:3306"
+    networks:
+      - user-api-network
+    environment:
+      - MYSQL_ROOT_PASSWORD=password
+    volumes:
+      - mysql:/var/lib/mysql
+      - mysql_config:/etc/mysql
+
+volumes:
+  mysql:
+  mysql_config:
+
+networks:
+  user-api-network:
+    driver: bridge
